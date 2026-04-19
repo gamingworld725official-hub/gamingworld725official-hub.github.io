@@ -1,10 +1,345 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>HIGames Studio</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gaming World Studio — Mobile Game Developer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --neon: #00f5ff;
+            --neon2: #ff006e;
+            --gold: #ffd60a;
+            --dark: #020010;
+            --card: rgba(255,255,255,0.04);
+            --border: rgba(0,245,255,0.15);
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            background: var(--dark);
+            color: #e0e0ff;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 18px;
+            overflow-x: hidden;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background: 
+                radial-gradient(ellipse 80% 50% at 20% 20%, rgba(0,245,255,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse 60% 40% at 80% 80%, rgba(255,0,110,0.06) 0%, transparent 60%);
+            pointer-events: none;
+            z-index: 0;
+        }
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(0,245,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,245,255,0.03) 1px, transparent 1px);
+            background-size: 60px 60px;
+            pointer-events: none;
+            z-index: 0;
+        }
+        nav {
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 60px;
+            background: rgba(2,0,16,0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+        .nav-logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 18px;
+            font-weight: 900;
+            color: var(--neon);
+            text-shadow: 0 0 20px rgba(0,245,255,0.5);
+            letter-spacing: 2px;
+        }
+        .nav-logo span { color: var(--gold); }
+        .nav-links { display: flex; gap: 40px; list-style: none; }
+        .nav-links a {
+            color: rgba(224,224,255,0.7);
+            text-decoration: none;
+            font-size: 14px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: color 0.3s;
+        }
+        .nav-links a:hover { color: var(--neon); }
+        .hero {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 120px 40px 80px;
+        }
+        .hero-tag {
+            font-size: 12px;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            color: var(--neon);
+            margin-bottom: 24px;
+            opacity: 0;
+            animation: fadeUp 0.8s 0.2s forwards;
+        }
+        .hero-title {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(40px, 7vw, 90px);
+            font-weight: 900;
+            line-height: 1;
+            margin-bottom: 16px;
+            opacity: 0;
+            animation: fadeUp 0.8s 0.4s forwards;
+        }
+        .hero-title .line1 { color: #ffffff; display: block; }
+        .hero-title .line2 { color: transparent; -webkit-text-stroke: 2px var(--neon); display: block; }
+        .hero-sub {
+            font-size: 20px;
+            color: rgba(224,224,255,0.6);
+            max-width: 560px;
+            line-height: 1.6;
+            margin-bottom: 48px;
+            font-weight: 300;
+            opacity: 0;
+            animation: fadeUp 0.8s 0.6s forwards;
+        }
+        .hero-buttons {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            opacity: 0;
+            animation: fadeUp 0.8s 0.8s forwards;
+        }
+        .btn-primary {
+            padding: 16px 40px;
+            background: var(--neon);
+            color: var(--dark);
+            font-family: 'Orbitron', monospace;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-decoration: none;
+            text-transform: uppercase;
+            clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+            transition: all 0.3s;
+            box-shadow: 0 0 30px rgba(0,245,255,0.3);
+        }
+        .btn-primary:hover { background: var(--gold); box-shadow: 0 0 40px rgba(255,214,10,0.4); transform: translateY(-2px); }
+        .btn-secondary {
+            padding: 16px 40px;
+            background: transparent;
+            color: var(--neon);
+            font-family: 'Orbitron', monospace;
+            font-size: 13px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-decoration: none;
+            text-transform: uppercase;
+            border: 1px solid var(--neon);
+            clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+            transition: all 0.3s;
+        }
+        .btn-secondary:hover { background: rgba(0,245,255,0.1); transform: translateY(-2px); }
+        .scroll-indicator {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            opacity: 0;
+            animation: fadeIn 1s 1.5s forwards;
+        }
+        .scroll-indicator span { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: rgba(224,224,255,0.4); }
+        .scroll-line { width: 1px; height: 50px; background: linear-gradient(to bottom, var(--neon), transparent); animation: scrollPulse 2s infinite; }
+        .stats {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+        }
+        .stat { background: var(--dark); padding: 50px 40px; text-align: center; }
+        .stat-number { font-family: 'Orbitron', monospace; font-size: 48px; font-weight: 900; color: var(--neon); text-shadow: 0 0 30px rgba(0,245,255,0.4); display: block; }
+        .stat-label { font-size: 13px; letter-spacing: 3px; text-transform: uppercase; color: rgba(224,224,255,0.5); margin-top: 8px; display: block; }
+        .section { position: relative; z-index: 1; padding: 120px 60px; max-width: 1200px; margin: 0 auto; }
+        .section-header { margin-bottom: 60px; }
+        .section-tag { font-size: 12px; letter-spacing: 6px; text-transform: uppercase; color: var(--neon2); margin-bottom: 16px; display: block; }
+        .section-title { font-family: 'Orbitron', monospace; font-size: clamp(32px, 4vw, 52px); font-weight: 900; color: #ffffff; line-height: 1.1; }
+        .games-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
+        .game-card { background: var(--card); border: 1px solid var(--border); padding: 40px; position: relative; overflow: hidden; transition: all 0.4s; }
+        .game-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, var(--neon), var(--neon2)); }
+        .game-card:hover { border-color: rgba(0,245,255,0.4); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,245,255,0.1); }
+        .game-icon { width: 80px; height: 80px; background: linear-gradient(135deg, var(--neon2), var(--neon)); display: flex; align-items: center; justify-content: center; font-size: 36px; margin-bottom: 24px; clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%); }
+        .game-name { font-family: 'Orbitron', monospace; font-size: 22px; font-weight: 700; color: #ffffff; margin-bottom: 12px; }
+        .game-desc { color: rgba(224,224,255,0.6); font-size: 16px; line-height: 1.6; margin-bottom: 24px; }
+        .game-badge { display: inline-block; padding: 6px 16px; background: rgba(0,245,255,0.1); border: 1px solid rgba(0,245,255,0.3); color: var(--neon); font-size: 12px; letter-spacing: 2px; text-transform: uppercase; }
+        .game-badge.coming { background: rgba(255,214,10,0.1); border-color: rgba(255,214,10,0.3); color: var(--gold); }
+        .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+        .about-text p { color: rgba(224,224,255,0.7); line-height: 1.8; margin-bottom: 20px; font-size: 17px; }
+        .about-features { display: flex; flex-direction: column; gap: 16px; }
+        .feature { display: flex; align-items: flex-start; gap: 16px; padding: 20px; background: var(--card); border: 1px solid var(--border); transition: border-color 0.3s; }
+        .feature:hover { border-color: rgba(0,245,255,0.3); }
+        .feature-icon { width: 40px; height: 40px; background: linear-gradient(135deg, rgba(0,245,255,0.2), rgba(255,0,110,0.2)); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
+        .feature-text h4 { font-family: 'Orbitron', monospace; font-size: 14px; color: var(--neon); margin-bottom: 4px; letter-spacing: 1px; }
+        .feature-text p { font-size: 14px; color: rgba(224,224,255,0.5); line-height: 1.5; }
+        .contact-section { position: relative; z-index: 1; background: linear-gradient(135deg, rgba(0,245,255,0.05), rgba(255,0,110,0.05)); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 120px 60px; text-align: center; }
+        .contact-title { font-family: 'Orbitron', monospace; font-size: clamp(32px, 4vw, 52px); font-weight: 900; color: #ffffff; margin-bottom: 20px; }
+        .contact-sub { color: rgba(224,224,255,0.6); font-size: 18px; margin-bottom: 48px; }
+        .contact-email { font-family: 'Orbitron', monospace; font-size: 18px; color: var(--neon); text-decoration: none; border-bottom: 1px solid rgba(0,245,255,0.3); padding-bottom: 4px; transition: all 0.3s; }
+        .contact-email:hover { color: var(--gold); border-color: var(--gold); }
+        footer { position: relative; z-index: 1; padding: 40px 60px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); }
+        .footer-logo { font-family: 'Orbitron', monospace; font-size: 16px; font-weight: 900; color: var(--neon); }
+        .footer-logo span { color: var(--gold); }
+        .footer-copy { font-size: 13px; color: rgba(224,224,255,0.3); letter-spacing: 1px; }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { to { opacity: 1; } }
+        @keyframes scrollPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        @media (max-width: 768px) {
+            nav { padding: 16px 24px; }
+            .nav-links { display: none; }
+            .stats { grid-template-columns: 1fr; }
+            .section { padding: 80px 24px; }
+            .about-grid { grid-template-columns: 1fr; gap: 40px; }
+            footer { flex-direction: column; gap: 16px; text-align: center; }
+            .contact-section { padding: 80px 24px; }
+        }
+    </style>
 </head>
 <body>
-    <h1>HIGames Studio</h1>
-    <p>Official developer page for HIGames Studio apps and games.</p>
+
+    <nav>
+        <div class="nav-logo">Gaming <span>World</span> Studio</div>
+        <ul class="nav-links">
+            <li><a href="#games">Games</a></li>
+            <li><a href="#about">About</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero">
+        <p class="hero-tag">🎮 Independent Mobile Game Studio</p>
+        <h1 class="hero-title">
+            <span class="line1">Gaming World</span>
+            <span class="line2">Studio</span>
+        </h1>
+        <p class="hero-sub">Crafting immersive mobile gaming experiences that captivate players worldwide.</p>
+        <div class="hero-buttons">
+            <a href="#games" class="btn-primary">Our Games</a>
+            <a href="#contact" class="btn-secondary">Get In Touch</a>
+        </div>
+        <div class="scroll-indicator">
+            <span>Scroll</span>
+            <div class="scroll-line"></div>
+        </div>
+    </section>
+
+    <div class="stats">
+        <div class="stat">
+            <span class="stat-number">1+</span>
+            <span class="stat-label">Games Published</span>
+        </div>
+        <div class="stat">
+            <span class="stat-number">iOS</span>
+            <span class="stat-label">Platform</span>
+        </div>
+        <div class="stat">
+            <span class="stat-number">🇵🇰</span>
+            <span class="stat-label">Based in Pakistan</span>
+        </div>
+    </div>
+
+    <section class="section" id="games">
+        <div class="section-header">
+            <span class="section-tag">// Our Portfolio</span>
+            <h2 class="section-title">Featured Games</h2>
+        </div>
+        <div class="games-grid">
+            <div class="game-card">
+                <div class="game-icon">🐰</div>
+                <h3 class="game-name">I Am Bunny</h3>
+                <p class="game-desc">An exciting mobile game featuring adorable bunny adventures. Jump, hop and explore colorful worlds in this fun casual game for all ages.</p>
+                <span class="game-badge coming">Pre-Order</span>
+            </div>
+            <div class="game-card">
+                <div class="game-icon">🎮</div>
+                <h3 class="game-name">Coming Soon</h3>
+                <p class="game-desc">We are working hard on our next exciting title. Stay tuned for more announcements and updates from Gaming World Studio.</p>
+                <span class="game-badge coming">In Development</span>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="about">
+        <div class="about-grid">
+            <div class="about-text">
+                <span class="section-tag">// Who We Are</span>
+                <h2 class="section-title" style="margin-bottom:24px;">Passionate Game Developers</h2>
+                <p>Gaming World Studio is an independent mobile game development studio based in Pakistan. We are passionate about creating fun, engaging and high quality mobile gaming experiences.</p>
+                <p>Our focus is on delivering polished casual and hyper-casual games that players love, with a commitment to quality and player satisfaction at every step.</p>
+            </div>
+            <div class="about-features">
+                <div class="feature">
+                    <div class="feature-icon">🎯</div>
+                    <div class="feature-text">
+                        <h4>Player First</h4>
+                        <p>Every design decision is made with the player experience in mind.</p>
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">⚡</div>
+                    <div class="feature-text">
+                        <h4>Quality Games</h4>
+                        <p>We focus on polished, well-crafted games that stand out in the market.</p>
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🌍</div>
+                    <div class="feature-text">
+                        <h4>Global Reach</h4>
+                        <p>Publishing on iOS App Store with global availability for all players.</p>
+                    </div>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon">🚀</div>
+                    <div class="feature-text">
+                        <h4>Always Growing</h4>
+                        <p>Continuously learning and improving to deliver better games each time.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="contact-section" id="contact">
+        <h2 class="contact-title">Get In Touch</h2>
+        <p class="contact-sub">Have questions or want to collaborate? We'd love to hear from you.</p>
+        <a href="mailto:gamingworld725.official@gmail.com" class="contact-email">gamingworld725.official@gmail.com</a>
+    </div>
+
+    <footer>
+        <div class="footer-logo">Gaming <span>World</span> Studio</div>
+        <p class="footer-copy">© 2026 Gaming World Studio. All rights reserved.</p>
+    </footer>
+
 </body>
 </html>
