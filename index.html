@@ -4,342 +4,1011 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gaming World Studio — Mobile Game Developer</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --neon: #00f5ff;
-            --neon2: #ff006e;
-            --gold: #ffd60a;
-            --dark: #020010;
-            --card: rgba(255,255,255,0.04);
-            --border: rgba(0,245,255,0.15);
+            --bg: #06060a;
+            --surface: #0d0d14;
+            --surface2: #13131e;
+            --accent: #c8f135;
+            --accent2: #4d9fff;
+            --accent3: #ff4d6d;
+            --text: #f0f0f8;
+            --muted: rgba(240,240,248,0.45);
+            --border: rgba(200,241,53,0.12);
+            --border2: rgba(240,240,248,0.07);
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
         html { scroll-behavior: smooth; }
         body {
-            background: var(--dark);
-            color: #e0e0ff;
-            font-family: 'Rajdhani', sans-serif;
-            font-size: 18px;
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'DM Sans', sans-serif;
+            font-size: 16px;
             overflow-x: hidden;
+            cursor: none;
         }
+
+        /* Custom cursor */
+        .cursor {
+            position: fixed;
+            width: 10px; height: 10px;
+            background: var(--accent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            transition: transform 0.1s;
+            mix-blend-mode: difference;
+        }
+        .cursor-ring {
+            position: fixed;
+            width: 36px; height: 36px;
+            border: 1px solid rgba(200,241,53,0.5);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            transform: translate(-50%, -50%);
+            transition: all 0.15s ease;
+        }
+
+        /* Noise overlay */
         body::before {
             content: '';
-            position: fixed;
-            inset: 0;
-            background: 
-                radial-gradient(ellipse 80% 50% at 20% 20%, rgba(0,245,255,0.06) 0%, transparent 60%),
-                radial-gradient(ellipse 60% 40% at 80% 80%, rgba(255,0,110,0.06) 0%, transparent 60%);
+            position: fixed; inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+            background-size: 200px;
             pointer-events: none;
             z-index: 0;
+            opacity: 0.4;
         }
-        body::after {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background-image: 
-                linear-gradient(rgba(0,245,255,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0,245,255,0.03) 1px, transparent 1px);
-            background-size: 60px 60px;
-            pointer-events: none;
-            z-index: 0;
-        }
+
+        /* NAV */
         nav {
-            position: fixed;
-            top: 0; left: 0; right: 0;
+            position: fixed; top: 0; left: 0; right: 0;
             z-index: 100;
+            padding: 0 60px;
+            height: 72px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 20px 60px;
-            background: rgba(2,0,16,0.8);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
+            justify-content: space-between;
+            background: rgba(6,6,10,0.7);
+            backdrop-filter: blur(24px);
+            border-bottom: 1px solid var(--border2);
         }
         .nav-logo {
-            font-family: 'Orbitron', monospace;
-            font-size: 18px;
-            font-weight: 900;
-            color: var(--neon);
-            text-shadow: 0 0 20px rgba(0,245,255,0.5);
-            letter-spacing: 2px;
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 17px;
+            letter-spacing: -0.5px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        .nav-logo span { color: var(--gold); }
-        .nav-links { display: flex; gap: 40px; list-style: none; }
+        .logo-dot {
+            width: 8px; height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%,100% { transform: scale(1); opacity:1; }
+            50% { transform: scale(1.5); opacity:0.6; }
+        }
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 48px;
+            list-style: none;
+        }
         .nav-links a {
-            color: rgba(224,224,255,0.7);
+            color: var(--muted);
             text-decoration: none;
-            font-size: 14px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            transition: color 0.3s;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            transition: color 0.2s;
+            position: relative;
         }
-        .nav-links a:hover { color: var(--neon); }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -4px; left: 0; right: 0;
+            height: 1px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.3s;
+        }
+        .nav-links a:hover { color: var(--text); }
+        .nav-links a:hover::after { transform: scaleX(1); }
+        .nav-cta {
+            padding: 9px 24px;
+            background: var(--accent);
+            color: #06060a;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 13px;
+            text-decoration: none;
+            letter-spacing: 0.5px;
+            border-radius: 2px;
+            transition: all 0.2s;
+        }
+        .nav-cta:hover { background: #d9ff55; transform: translateY(-1px); }
+
+        /* HERO */
         .hero {
             position: relative;
             z-index: 1;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             align-items: center;
-            text-align: center;
-            padding: 120px 40px 80px;
+            padding: 72px 60px 0;
+            gap: 60px;
+            overflow: hidden;
         }
-        .hero-tag {
-            font-size: 12px;
-            letter-spacing: 6px;
-            text-transform: uppercase;
-            color: var(--neon);
-            margin-bottom: 24px;
-            opacity: 0;
-            animation: fadeUp 0.8s 0.2s forwards;
-        }
-        .hero-title {
-            font-family: 'Orbitron', monospace;
-            font-size: clamp(40px, 7vw, 90px);
-            font-weight: 900;
-            line-height: 1;
-            margin-bottom: 16px;
-            opacity: 0;
-            animation: fadeUp 0.8s 0.4s forwards;
-        }
-        .hero-title .line1 { color: #ffffff; display: block; }
-        .hero-title .line2 { color: transparent; -webkit-text-stroke: 2px var(--neon); display: block; }
-        .hero-sub {
-            font-size: 20px;
-            color: rgba(224,224,255,0.6);
-            max-width: 560px;
-            line-height: 1.6;
-            margin-bottom: 48px;
-            font-weight: 300;
-            opacity: 0;
-            animation: fadeUp 0.8s 0.6s forwards;
-        }
-        .hero-buttons {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
-            opacity: 0;
-            animation: fadeUp 0.8s 0.8s forwards;
-        }
-        .btn-primary {
-            padding: 16px 40px;
-            background: var(--neon);
-            color: var(--dark);
-            font-family: 'Orbitron', monospace;
-            font-size: 13px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-decoration: none;
-            text-transform: uppercase;
-            clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
-            transition: all 0.3s;
-            box-shadow: 0 0 30px rgba(0,245,255,0.3);
-        }
-        .btn-primary:hover { background: var(--gold); box-shadow: 0 0 40px rgba(255,214,10,0.4); transform: translateY(-2px); }
-        .btn-secondary {
-            padding: 16px 40px;
-            background: transparent;
-            color: var(--neon);
-            font-family: 'Orbitron', monospace;
-            font-size: 13px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            text-decoration: none;
-            text-transform: uppercase;
-            border: 1px solid var(--neon);
-            clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
-            transition: all 0.3s;
-        }
-        .btn-secondary:hover { background: rgba(0,245,255,0.1); transform: translateY(-2px); }
-        .scroll-indicator {
+        .hero-bg-circle {
             position: absolute;
-            bottom: 40px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            flex-direction: column;
+            width: 700px; height: 700px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(200,241,53,0.06) 0%, transparent 70%);
+            right: -200px; top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+        }
+        .hero-bg-grid {
+            position: absolute; inset: 0;
+            background-image:
+                linear-gradient(rgba(240,240,248,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(240,240,248,0.025) 1px, transparent 1px);
+            background-size: 80px 80px;
+            pointer-events: none;
+        }
+        .hero-content { position: relative; }
+        .hero-eyebrow {
+            display: inline-flex;
             align-items: center;
             gap: 8px;
+            padding: 6px 14px;
+            background: rgba(200,241,53,0.08);
+            border: 1px solid rgba(200,241,53,0.2);
+            border-radius: 100px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--accent);
+            letter-spacing: 0.5px;
+            margin-bottom: 32px;
             opacity: 0;
-            animation: fadeIn 1s 1.5s forwards;
+            animation: fadeSlide 0.7s 0.1s forwards;
         }
-        .scroll-indicator span { font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: rgba(224,224,255,0.4); }
-        .scroll-line { width: 1px; height: 50px; background: linear-gradient(to bottom, var(--neon), transparent); animation: scrollPulse 2s infinite; }
-        .stats {
+        .hero-eyebrow span { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
+        .hero-h1 {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: clamp(48px, 5.5vw, 80px);
+            line-height: 1.0;
+            letter-spacing: -2px;
+            color: var(--text);
+            margin-bottom: 28px;
+            opacity: 0;
+            animation: fadeSlide 0.7s 0.25s forwards;
+        }
+        .hero-h1 em {
+            font-style: normal;
+            color: transparent;
+            -webkit-text-stroke: 1.5px var(--accent);
+        }
+        .hero-desc {
+            font-size: 17px;
+            color: var(--muted);
+            line-height: 1.7;
+            max-width: 460px;
+            margin-bottom: 44px;
+            font-weight: 300;
+            opacity: 0;
+            animation: fadeSlide 0.7s 0.4s forwards;
+        }
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            opacity: 0;
+            animation: fadeSlide 0.7s 0.55s forwards;
+        }
+        .btn-accent {
+            padding: 14px 32px;
+            background: var(--accent);
+            color: #06060a;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 0.3px;
+            text-decoration: none;
+            border-radius: 3px;
+            transition: all 0.25s;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-accent:hover { background: #d9ff55; transform: translateY(-2px); box-shadow: 0 12px 40px rgba(200,241,53,0.2); }
+        .btn-ghost {
+            padding: 14px 32px;
+            background: transparent;
+            color: var(--text);
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 0.3px;
+            text-decoration: none;
+            border: 1px solid var(--border2);
+            border-radius: 3px;
+            transition: all 0.25s;
+        }
+        .btn-ghost:hover { border-color: rgba(200,241,53,0.35); color: var(--accent); }
+
+        /* Hero visual panel */
+        .hero-visual {
+            position: relative;
+            opacity: 0;
+            animation: fadeIn 1s 0.6s forwards;
+        }
+        .hero-card-main {
+            background: var(--surface2);
+            border: 1px solid var(--border2);
+            border-radius: 16px;
+            padding: 36px;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero-card-main::before {
+            content: '';
+            position: absolute;
+            top: -1px; left: 30px; right: 30px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent);
+        }
+        .hcard-label {
+            font-size: 11px;
+            font-weight: 500;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 20px;
+        }
+        .hcard-game {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            padding: 18px;
+            background: rgba(200,241,53,0.05);
+            border: 1px solid rgba(200,241,53,0.12);
+            border-radius: 10px;
+            margin-bottom: 12px;
+        }
+        .hcard-game-icon {
+            width: 56px; height: 56px;
+            background: linear-gradient(135deg, #4d9fff, #c8f135);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            flex-shrink: 0;
+        }
+        .hcard-game-name {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 17px;
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+        .hcard-game-meta {
+            font-size: 12px;
+            color: var(--muted);
+        }
+        .hcard-tag {
+            display: inline-block;
+            padding: 3px 10px;
+            background: rgba(200,241,53,0.12);
+            color: var(--accent);
+            font-size: 11px;
+            font-weight: 500;
+            border-radius: 100px;
+        }
+        .hcard-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .hcard-stat {
+            background: var(--surface);
+            border-radius: 8px;
+            padding: 14px;
+            text-align: center;
+        }
+        .hcard-stat-val {
+            font-family: 'Space Mono', monospace;
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent);
+            display: block;
+            margin-bottom: 4px;
+        }
+        .hcard-stat-lbl {
+            font-size: 10px;
+            color: var(--muted);
+            letter-spacing: 0.5px;
+        }
+        .floating-badge {
+            position: absolute;
+            top: -16px; right: 24px;
+            background: var(--accent3);
+            color: #fff;
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+            padding: 6px 14px;
+            border-radius: 100px;
+            animation: floatBadge 3s ease-in-out infinite;
+        }
+        @keyframes floatBadge {
+            0%,100% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+        }
+
+        /* STATS BAR */
+        .stats-bar {
             position: relative;
             z-index: 1;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 1px;
-            background: var(--border);
-            border-top: 1px solid var(--border);
-            border-bottom: 1px solid var(--border);
+            border-top: 1px solid var(--border2);
+            border-bottom: 1px solid var(--border2);
         }
-        .stat { background: var(--dark); padding: 50px 40px; text-align: center; }
-        .stat-number { font-family: 'Orbitron', monospace; font-size: 48px; font-weight: 900; color: var(--neon); text-shadow: 0 0 30px rgba(0,245,255,0.4); display: block; }
-        .stat-label { font-size: 13px; letter-spacing: 3px; text-transform: uppercase; color: rgba(224,224,255,0.5); margin-top: 8px; display: block; }
-        .section { position: relative; z-index: 1; padding: 120px 60px; max-width: 1200px; margin: 0 auto; }
-        .section-header { margin-bottom: 60px; }
-        .section-tag { font-size: 12px; letter-spacing: 6px; text-transform: uppercase; color: var(--neon2); margin-bottom: 16px; display: block; }
-        .section-title { font-family: 'Orbitron', monospace; font-size: clamp(32px, 4vw, 52px); font-weight: 900; color: #ffffff; line-height: 1.1; }
-        .games-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; }
-        .game-card { background: var(--card); border: 1px solid var(--border); padding: 40px; position: relative; overflow: hidden; transition: all 0.4s; }
-        .game-card::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: linear-gradient(90deg, var(--neon), var(--neon2)); }
-        .game-card:hover { border-color: rgba(0,245,255,0.4); transform: translateY(-4px); box-shadow: 0 20px 60px rgba(0,245,255,0.1); }
-        .game-icon { width: 80px; height: 80px; background: linear-gradient(135deg, var(--neon2), var(--neon)); display: flex; align-items: center; justify-content: center; font-size: 36px; margin-bottom: 24px; clip-path: polygon(10px 0%, 100% 0%, calc(100% - 10px) 100%, 0% 100%); }
-        .game-name { font-family: 'Orbitron', monospace; font-size: 22px; font-weight: 700; color: #ffffff; margin-bottom: 12px; }
-        .game-desc { color: rgba(224,224,255,0.6); font-size: 16px; line-height: 1.6; margin-bottom: 24px; }
-        .game-badge { display: inline-block; padding: 6px 16px; background: rgba(0,245,255,0.1); border: 1px solid rgba(0,245,255,0.3); color: var(--neon); font-size: 12px; letter-spacing: 2px; text-transform: uppercase; }
-        .game-badge.coming { background: rgba(255,214,10,0.1); border-color: rgba(255,214,10,0.3); color: var(--gold); }
-        .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
-        .about-text p { color: rgba(224,224,255,0.7); line-height: 1.8; margin-bottom: 20px; font-size: 17px; }
-        .about-features { display: flex; flex-direction: column; gap: 16px; }
-        .feature { display: flex; align-items: flex-start; gap: 16px; padding: 20px; background: var(--card); border: 1px solid var(--border); transition: border-color 0.3s; }
-        .feature:hover { border-color: rgba(0,245,255,0.3); }
-        .feature-icon { width: 40px; height: 40px; background: linear-gradient(135deg, rgba(0,245,255,0.2), rgba(255,0,110,0.2)); display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; }
-        .feature-text h4 { font-family: 'Orbitron', monospace; font-size: 14px; color: var(--neon); margin-bottom: 4px; letter-spacing: 1px; }
-        .feature-text p { font-size: 14px; color: rgba(224,224,255,0.5); line-height: 1.5; }
-        .contact-section { position: relative; z-index: 1; background: linear-gradient(135deg, rgba(0,245,255,0.05), rgba(255,0,110,0.05)); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 120px 60px; text-align: center; }
-        .contact-title { font-family: 'Orbitron', monospace; font-size: clamp(32px, 4vw, 52px); font-weight: 900; color: #ffffff; margin-bottom: 20px; }
-        .contact-sub { color: rgba(224,224,255,0.6); font-size: 18px; margin-bottom: 48px; }
-        .contact-email { font-family: 'Orbitron', monospace; font-size: 18px; color: var(--neon); text-decoration: none; border-bottom: 1px solid rgba(0,245,255,0.3); padding-bottom: 4px; transition: all 0.3s; }
-        .contact-email:hover { color: var(--gold); border-color: var(--gold); }
-        footer { position: relative; z-index: 1; padding: 40px 60px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); }
-        .footer-logo { font-family: 'Orbitron', monospace; font-size: 16px; font-weight: 900; color: var(--neon); }
-        .footer-logo span { color: var(--gold); }
-        .footer-copy { font-size: 13px; color: rgba(224,224,255,0.3); letter-spacing: 1px; }
-        @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeIn { to { opacity: 1; } }
-        @keyframes scrollPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-        @media (max-width: 768px) {
-            nav { padding: 16px 24px; }
+        .stat-item {
+            padding: 48px 60px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .stat-item:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: 0; top: 25%; bottom: 25%;
+            width: 1px;
+            background: var(--border2);
+        }
+        .stat-num {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 44px;
+            color: var(--text);
+            letter-spacing: -2px;
+            line-height: 1;
+        }
+        .stat-num span { color: var(--accent); }
+        .stat-lbl {
+            font-size: 13px;
+            color: var(--muted);
+            letter-spacing: 0.5px;
+        }
+        .stat-sub {
+            font-size: 11px;
+            color: rgba(200,241,53,0.5);
+            font-family: 'Space Mono', monospace;
+        }
+
+        /* SECTION COMMON */
+        .section-wrap {
+            position: relative;
+            z-index: 1;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 120px 60px;
+        }
+        .sec-eyebrow {
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: var(--accent);
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .sec-eyebrow::after {
+            content: '';
+            flex: 1;
+            max-width: 60px;
+            height: 1px;
+            background: var(--accent);
+            opacity: 0.4;
+        }
+        .sec-title {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: clamp(36px, 4vw, 56px);
+            letter-spacing: -1.5px;
+            color: var(--text);
+            line-height: 1.05;
+        }
+
+        /* GAMES SECTION */
+        .games-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 60px;
+        }
+        .games-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .game-card {
+            background: var(--surface);
+            border: 1px solid var(--border2);
+            border-radius: 16px;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.35s;
+            display: flex;
+            flex-direction: column;
+        }
+        .game-card:hover {
+            border-color: rgba(200,241,53,0.25);
+            transform: translateY(-4px);
+            box-shadow: 0 24px 64px rgba(0,0,0,0.4);
+        }
+        .game-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 60% 40% at 80% 20%, rgba(200,241,53,0.04) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.35s;
+        }
+        .game-card:hover::before { opacity: 1; }
+        .game-card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 28px;
+        }
+        .game-icon-wrap {
+            width: 72px; height: 72px;
+            background: linear-gradient(135deg, rgba(77,159,255,0.2), rgba(200,241,53,0.2));
+            border: 1px solid rgba(200,241,53,0.15);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+        }
+        .game-status {
+            padding: 5px 12px;
+            border-radius: 100px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+        .status-preorder {
+            background: rgba(255,77,109,0.12);
+            color: var(--accent3);
+            border: 1px solid rgba(255,77,109,0.2);
+        }
+        .status-dev {
+            background: rgba(77,159,255,0.12);
+            color: var(--accent2);
+            border: 1px solid rgba(77,159,255,0.2);
+        }
+        .game-name {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 24px;
+            letter-spacing: -0.5px;
+            color: var(--text);
+            margin-bottom: 12px;
+        }
+        .game-desc {
+            font-size: 15px;
+            color: var(--muted);
+            line-height: 1.65;
+            flex: 1;
+            margin-bottom: 28px;
+        }
+        .game-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .gtag {
+            padding: 4px 12px;
+            background: var(--surface2);
+            border: 1px solid var(--border2);
+            border-radius: 100px;
+            font-size: 11px;
+            color: var(--muted);
+        }
+        .game-card-featured {
+            grid-column: 1 / -1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        .game-card-featured .game-content { padding: 48px; display: flex; flex-direction: column; }
+        .game-card-featured .game-visual {
+            background: linear-gradient(135deg, #0a1628, #0d2040);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 120px;
+            position: relative;
+            overflow: hidden;
+            border-left: 1px solid var(--border2);
+        }
+        .game-card-featured .game-visual::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(circle at center, rgba(77,159,255,0.15) 0%, transparent 70%);
+        }
+        .game-visual-emoji {
+            position: relative;
+            z-index: 1;
+            animation: floatBadge 4s ease-in-out infinite;
+            filter: drop-shadow(0 0 40px rgba(77,159,255,0.4));
+        }
+
+        /* ABOUT SECTION */
+        .about-wrap {
+            background: var(--surface);
+            border-top: 1px solid var(--border2);
+            border-bottom: 1px solid var(--border2);
+        }
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 100px;
+            align-items: start;
+        }
+        .about-left {}
+        .about-desc {
+            font-size: 17px;
+            color: var(--muted);
+            line-height: 1.75;
+            margin-top: 28px;
+            font-weight: 300;
+        }
+        .about-desc + .about-desc { margin-top: 16px; }
+        .about-right { padding-top: 4px; }
+        .pillars { display: flex; flex-direction: column; gap: 2px; }
+        .pillar {
+            padding: 24px;
+            background: var(--bg);
+            border: 1px solid var(--border2);
+            border-radius: 8px;
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+            transition: all 0.25s;
+        }
+        .pillar:hover { border-color: rgba(200,241,53,0.2); background: var(--surface2); }
+        .pillar-num {
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            color: var(--accent);
+            opacity: 0.6;
+            padding-top: 3px;
+            flex-shrink: 0;
+        }
+        .pillar-title {
+            font-family: 'Syne', sans-serif;
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--text);
+            margin-bottom: 6px;
+        }
+        .pillar-desc {
+            font-size: 13px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        /* CONTACT */
+        .contact-section {
+            position: relative;
+            z-index: 1;
+            padding: 140px 60px;
+            text-align: center;
+            overflow: hidden;
+        }
+        .contact-section::before {
+            content: '';
+            position: absolute; inset: 0;
+            background:
+                radial-gradient(ellipse 80% 60% at 50% 50%, rgba(200,241,53,0.06) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .contact-pre {
+            font-family: 'Space Mono', monospace;
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: var(--accent);
+            text-transform: uppercase;
+            margin-bottom: 24px;
+            display: block;
+            position: relative;
+        }
+        .contact-h2 {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: clamp(40px, 5vw, 72px);
+            letter-spacing: -2px;
+            color: var(--text);
+            line-height: 1.0;
+            margin-bottom: 24px;
+            position: relative;
+        }
+        .contact-h2 em {
+            font-style: normal;
+            color: transparent;
+            -webkit-text-stroke: 1.5px rgba(200,241,53,0.5);
+        }
+        .contact-sub {
+            font-size: 18px;
+            color: var(--muted);
+            margin-bottom: 52px;
+            font-weight: 300;
+            position: relative;
+        }
+        .contact-email-link {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 18px 40px;
+            background: var(--surface);
+            border: 1px solid rgba(200,241,53,0.2);
+            border-radius: 4px;
+            text-decoration: none;
+            font-family: 'Space Mono', monospace;
+            font-size: 15px;
+            color: var(--accent);
+            transition: all 0.3s;
+        }
+        .contact-email-link:hover {
+            background: rgba(200,241,53,0.08);
+            border-color: rgba(200,241,53,0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 16px 48px rgba(200,241,53,0.1);
+        }
+        .email-icon { font-size: 18px; }
+
+        /* FOOTER */
+        footer {
+            position: relative;
+            z-index: 1;
+            border-top: 1px solid var(--border2);
+            padding: 32px 60px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .footer-logo {
+            font-family: 'Syne', sans-serif;
+            font-weight: 800;
+            font-size: 15px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .footer-logo-dot { width: 6px; height: 6px; background: var(--accent); border-radius: 50%; }
+        .footer-right {
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+        .footer-links { display: flex; gap: 32px; list-style: none; }
+        .footer-links a { font-size: 13px; color: var(--muted); text-decoration: none; transition: color 0.2s; }
+        .footer-links a:hover { color: var(--accent); }
+        .footer-copy { font-size: 12px; color: rgba(240,240,248,0.2); font-family: 'Space Mono', monospace; }
+
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @media (max-width: 900px) {
+            nav { padding: 0 24px; }
             .nav-links { display: none; }
-            .stats { grid-template-columns: 1fr; }
-            .section { padding: 80px 24px; }
-            .about-grid { grid-template-columns: 1fr; gap: 40px; }
-            footer { flex-direction: column; gap: 16px; text-align: center; }
-            .contact-section { padding: 80px 24px; }
+            .hero { grid-template-columns: 1fr; padding: 100px 24px 60px; }
+            .hero-visual { display: none; }
+            .stats-bar { grid-template-columns: 1fr; }
+            .stat-item { padding: 32px 24px; }
+            .stat-item::after { display: none; }
+            .section-wrap { padding: 80px 24px; }
+            .games-grid { grid-template-columns: 1fr; }
+            .game-card-featured { grid-column: auto; }
+            .game-card-featured { display: flex; flex-direction: column; }
+            .game-card-featured .game-visual { height: 200px; border-left: none; border-top: 1px solid var(--border2); }
+            .about-grid { grid-template-columns: 1fr; gap: 48px; }
+            .contact-section { padding: 100px 24px; }
+            footer { flex-direction: column; gap: 24px; padding: 28px 24px; text-align: center; }
+            .footer-right { flex-direction: column; gap: 16px; }
         }
     </style>
 </head>
 <body>
 
+    <div class="cursor" id="cursor"></div>
+    <div class="cursor-ring" id="cursorRing"></div>
+
     <nav>
-        <div class="nav-logo">Gaming <span>World</span> Studio</div>
+        <div class="nav-logo">
+            <div class="logo-dot"></div>
+            Gaming World Studio
+        </div>
         <ul class="nav-links">
             <li><a href="#games">Games</a></li>
             <li><a href="#about">About</a></li>
             <li><a href="#contact">Contact</a></li>
         </ul>
+        <a href="#contact" class="nav-cta">Get In Touch</a>
     </nav>
 
     <section class="hero">
-        <p class="hero-tag">🎮 Independent Mobile Game Studio</p>
-        <h1 class="hero-title">
-            <span class="line1">Gaming World</span>
-            <span class="line2">Studio</span>
-        </h1>
-        <p class="hero-sub">Crafting immersive mobile gaming experiences that captivate players worldwide.</p>
-        <div class="hero-buttons">
-            <a href="#games" class="btn-primary">Our Games</a>
-            <a href="#contact" class="btn-secondary">Get In Touch</a>
+        <div class="hero-bg-grid"></div>
+        <div class="hero-bg-circle"></div>
+        <div class="hero-content">
+            <div class="hero-eyebrow">
+                <span></span>
+                Independent Mobile Game Studio · Pakistan
+            </div>
+            <h1 class="hero-h1">
+                We Build<br><em>Worlds</em><br>You Play In
+            </h1>
+            <p class="hero-desc">
+                Crafting immersive mobile gaming experiences with obsessive attention to design, gameplay feel, and player satisfaction.
+            </p>
+            <div class="hero-actions">
+                <a href="#games" class="btn-accent">
+                    View Our Games
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M1 7h12M8 2l5 5-5 5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+                <a href="#about" class="btn-ghost">Learn More</a>
+            </div>
         </div>
-        <div class="scroll-indicator">
-            <span>Scroll</span>
-            <div class="scroll-line"></div>
+        <div class="hero-visual">
+            <div class="floating-badge">🔥 New Release Coming</div>
+            <div class="hero-card-main">
+                <p class="hcard-label">Featured Title</p>
+                <div class="hcard-game">
+                    <div class="hcard-game-icon">🐰</div>
+                    <div>
+                        <div class="hcard-game-name">I Am Bunny</div>
+                        <div class="hcard-game-meta">Casual · Adventure · iOS</div>
+                    </div>
+                    <div class="hcard-tag" style="margin-left:auto;">Pre-Order</div>
+                </div>
+                <div class="hcard-stats">
+                    <div class="hcard-stat">
+                        <span class="hcard-stat-val">iOS</span>
+                        <span class="hcard-stat-lbl">Platform</span>
+                    </div>
+                    <div class="hcard-stat">
+                        <span class="hcard-stat-val">🇵🇰</span>
+                        <span class="hcard-stat-lbl">Pakistan</span>
+                    </div>
+                    <div class="hcard-stat">
+                        <span class="hcard-stat-val">2026</span>
+                        <span class="hcard-stat-lbl">Studio Est.</span>
+                    </div>
+                </div>
+            </div>
         </div>
     </section>
 
-    <div class="stats">
-        <div class="stat">
-            <span class="stat-number">1+</span>
-            <span class="stat-label">Games Published</span>
+    <div class="stats-bar">
+        <div class="stat-item">
+            <div class="stat-num">1<span>+</span></div>
+            <div class="stat-lbl">Games Published</div>
+            <div class="stat-sub">// growing portfolio</div>
         </div>
-        <div class="stat">
-            <span class="stat-number">iOS</span>
-            <span class="stat-label">Platform</span>
+        <div class="stat-item">
+            <div class="stat-num" style="font-size:32px; letter-spacing: -1px;">iOS</div>
+            <div class="stat-lbl">Primary Platform</div>
+            <div class="stat-sub">// App Store</div>
         </div>
-        <div class="stat">
-            <span class="stat-number">🇵🇰</span>
-            <span class="stat-label">Based in Pakistan</span>
+        <div class="stat-item">
+            <div class="stat-num">∞</div>
+            <div class="stat-lbl">Ideas in Pipeline</div>
+            <div class="stat-sub">// always building</div>
         </div>
     </div>
 
-    <section class="section" id="games">
-        <div class="section-header">
-            <span class="section-tag">// Our Portfolio</span>
-            <h2 class="section-title">Featured Games</h2>
+    <section class="section-wrap" id="games">
+        <div class="games-header">
+            <div>
+                <div class="sec-eyebrow">01 — Portfolio</div>
+                <h2 class="sec-title">Our Games</h2>
+            </div>
         </div>
         <div class="games-grid">
-            <div class="game-card">
-                <div class="game-icon">🐰</div>
-                <h3 class="game-name">I Am Bunny</h3>
-                <p class="game-desc">An exciting mobile game featuring adorable bunny adventures. Jump, hop and explore colorful worlds in this fun casual game for all ages.</p>
-                <span class="game-badge coming">Pre-Order</span>
+            <div class="game-card game-card-featured">
+                <div class="game-content">
+                    <div class="game-card-top">
+                        <div class="game-icon-wrap" style="font-size:36px; width:80px; height:80px; border-radius:20px;">🐰</div>
+                        <span class="game-status status-preorder">Pre-Order Now</span>
+                    </div>
+                    <div class="game-name">I Am Bunny</div>
+                    <div class="game-desc">
+                        An exciting casual mobile adventure featuring adorable bunny characters. Jump, hop, and explore vibrant colorful worlds in this delightful game crafted for players of all ages. Experience smooth controls, charming visuals, and addictive gameplay loops.
+                    </div>
+                    <div class="game-tags">
+                        <span class="gtag">Casual</span>
+                        <span class="gtag">Adventure</span>
+                        <span class="gtag">All Ages</span>
+                        <span class="gtag">iOS</span>
+                    </div>
+                </div>
+                <div class="game-visual">
+                    <div class="game-visual-emoji">🐰</div>
+                </div>
             </div>
+
             <div class="game-card">
-                <div class="game-icon">🎮</div>
-                <h3 class="game-name">Coming Soon</h3>
-                <p class="game-desc">We are working hard on our next exciting title. Stay tuned for more announcements and updates from Gaming World Studio.</p>
-                <span class="game-badge coming">In Development</span>
+                <div class="game-card-top">
+                    <div class="game-icon-wrap">🎮</div>
+                    <span class="game-status status-dev">In Development</span>
+                </div>
+                <div class="game-name">Project: Unknown</div>
+                <div class="game-desc">
+                    Our next title is in active development. We're pushing boundaries to create something truly exciting. Stay tuned for announcements.
+                </div>
+                <div class="game-tags">
+                    <span class="gtag">TBA</span>
+                    <span class="gtag">iOS</span>
+                </div>
+            </div>
+
+            <div class="game-card">
+                <div class="game-card-top">
+                    <div class="game-icon-wrap">💡</div>
+                    <span class="game-status status-dev">Concept</span>
+                </div>
+                <div class="game-name">Always Expanding</div>
+                <div class="game-desc">
+                    More games are being designed and developed. We believe in quality over quantity — every release is crafted to leave a lasting impression.
+                </div>
+                <div class="game-tags">
+                    <span class="gtag">Ideas</span>
+                    <span class="gtag">Design</span>
+                </div>
             </div>
         </div>
     </section>
 
-    <section class="section" id="about">
-        <div class="about-grid">
-            <div class="about-text">
-                <span class="section-tag">// Who We Are</span>
-                <h2 class="section-title" style="margin-bottom:24px;">Passionate Game Developers</h2>
-                <p>Gaming World Studio is an independent mobile game development studio based in Pakistan. We are passionate about creating fun, engaging and high quality mobile gaming experiences.</p>
-                <p>Our focus is on delivering polished casual and hyper-casual games that players love, with a commitment to quality and player satisfaction at every step.</p>
-            </div>
-            <div class="about-features">
-                <div class="feature">
-                    <div class="feature-icon">🎯</div>
-                    <div class="feature-text">
-                        <h4>Player First</h4>
-                        <p>Every design decision is made with the player experience in mind.</p>
-                    </div>
+    <div class="about-wrap">
+        <div class="section-wrap" id="about">
+            <div class="about-grid">
+                <div class="about-left">
+                    <div class="sec-eyebrow">02 — Studio</div>
+                    <h2 class="sec-title">Who We<br>Are</h2>
+                    <p class="about-desc">
+                        Gaming World Studio is an independent mobile game development studio based in Pakistan, building engaging and high-quality mobile experiences for global audiences.
+                    </p>
+                    <p class="about-desc" style="margin-top:16px;">
+                        We are passionate about the craft — from the first gameplay prototype to the final polished release. Every pixel, every mechanic, every sound is considered with care.
+                    </p>
+                    <p class="about-desc" style="margin-top:16px;">
+                        Our focus is on delivering casual and hyper-casual games that feel instantly satisfying, keep players coming back, and stand out in a crowded market.
+                    </p>
                 </div>
-                <div class="feature">
-                    <div class="feature-icon">⚡</div>
-                    <div class="feature-text">
-                        <h4>Quality Games</h4>
-                        <p>We focus on polished, well-crafted games that stand out in the market.</p>
-                    </div>
-                </div>
-                <div class="feature">
-                    <div class="feature-icon">🌍</div>
-                    <div class="feature-text">
-                        <h4>Global Reach</h4>
-                        <p>Publishing on iOS App Store with global availability for all players.</p>
-                    </div>
-                </div>
-                <div class="feature">
-                    <div class="feature-icon">🚀</div>
-                    <div class="feature-text">
-                        <h4>Always Growing</h4>
-                        <p>Continuously learning and improving to deliver better games each time.</p>
+                <div class="about-right">
+                    <div class="pillars">
+                        <div class="pillar">
+                            <div class="pillar-num">01</div>
+                            <div>
+                                <div class="pillar-title">Player Experience First</div>
+                                <div class="pillar-desc">Every design decision begins and ends with how it feels to the player. Intuitive, satisfying, joyful.</div>
+                            </div>
+                        </div>
+                        <div class="pillar">
+                            <div class="pillar-num">02</div>
+                            <div>
+                                <div class="pillar-title">Uncompromising Quality</div>
+                                <div class="pillar-desc">We take the time to polish, refine, and perfect before shipping. Good enough is never enough.</div>
+                            </div>
+                        </div>
+                        <div class="pillar">
+                            <div class="pillar-num">03</div>
+                            <div>
+                                <div class="pillar-title">Global Reach</div>
+                                <div class="pillar-desc">Publishing on the iOS App Store with global availability, reaching players across every continent.</div>
+                            </div>
+                        </div>
+                        <div class="pillar">
+                            <div class="pillar-num">04</div>
+                            <div>
+                                <div class="pillar-title">Always Improving</div>
+                                <div class="pillar-desc">Each game we ship makes us better. We learn, iterate, and grow with every project.</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </section>
-
-    <div class="contact-section" id="contact">
-        <h2 class="contact-title">Get In Touch</h2>
-        <p class="contact-sub">Have questions or want to collaborate? We'd love to hear from you.</p>
-        <a href="mailto:gamingworld725.official@gmail.com" class="contact-email">gamingworld725.official@gmail.com</a>
     </div>
 
+    <section class="contact-section" id="contact">
+        <span class="contact-pre">03 — Contact</span>
+        <h2 class="contact-h2">Let's<br><em>Connect</em></h2>
+        <p class="contact-sub">Have a question, partnership idea, or just want to say hello?</p>
+        <a href="mailto:gamingworld725.official@gmail.com" class="contact-email-link">
+            <span class="email-icon">✉</span>
+            gamingworld725.official@gmail.com
+        </a>
+    </section>
+
     <footer>
-        <div class="footer-logo">Gaming <span>World</span> Studio</div>
-        <p class="footer-copy">© 2026 Gaming World Studio. All rights reserved.</p>
+        <div class="footer-logo">
+            <div class="footer-logo-dot"></div>
+            Gaming World Studio
+        </div>
+        <div class="footer-right">
+            <ul class="footer-links">
+                <li><a href="#games">Games</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+            <div class="footer-copy">© 2026 Gaming World Studio</div>
+        </div>
     </footer>
 
+    <script>
+        const cursor = document.getElementById('cursor');
+        const ring = document.getElementById('cursorRing');
+        let mx = 0, my = 0, rx = 0, ry = 0;
+        document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; cursor.style.left = mx + 'px'; cursor.style.top = my + 'px'; });
+        function animRing() {
+            rx += (mx - rx) * 0.12;
+            ry += (my - ry) * 0.12;
+            ring.style.left = rx + 'px';
+            ring.style.top = ry + 'px';
+            requestAnimationFrame(animRing);
+        }
+        animRing();
+        document.querySelectorAll('a, button').forEach(el => {
+            el.addEventListener('mouseenter', () => { ring.style.width = '56px'; ring.style.height = '56px'; ring.style.borderColor = 'rgba(200,241,53,0.8)'; });
+            el.addEventListener('mouseleave', () => { ring.style.width = '36px'; ring.style.height = '36px'; ring.style.borderColor = 'rgba(200,241,53,0.5)'; });
+        });
+
+        // Scroll reveal
+        const observer = new IntersectionObserver(entries => {
+            entries.forEach(e => {
+                if (e.isIntersecting) { e.target.style.opacity = '1'; e.target.style.transform = 'translateY(0)'; }
+            });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.stat-item, .game-card, .pillar, .hcard-stat').forEach(el => {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(20px)';
+            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+            observer.observe(el);
+        });
+    </script>
 </body>
 </html>
