@@ -1,5 +1,5 @@
 google.com, pub-6911291316527098, DIRECT, f08c47fec0942fa0
-vungle.com, 69c428ce4bae0d5981c02b3d, DIRECT, c107d686becd2d77
+vungle.com,69c428ce4bae0d5981c02b3d,DIRECT,c107d686becd2d77
 contextweb.com,562852,RESELLER,89ff185a4c4e857c
 media.net,8CU12AQ1Y,RESELLER
 media.net,8CU9B72O6,RESELLER
